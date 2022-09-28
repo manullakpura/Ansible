@@ -1,0 +1,32 @@
+---
+- hosts: fortigates
+  collections:
+    - fortinet.fortios
+  connection: httpapi
+  vars:
+   vdom: "root"
+   address_name: "object name"
+   subnet: "192.168.100.0/24"
+   address_obj_interface: "any"
+   address_type: "ipmask" #ipmask, iprange, fqdn, geography, wildcard, dynamic, interface-subnet, mac, wildcard-fqdn
+   colour: "3"
+   comment: "Test Comment"
+   
+   ansible_httpapi_use_ssl: no
+   ansible_httpapi_validate_certs: no
+   ansible_httpapi_port: 80
+  
+  tasks:
+  
+  - name: Configure IPv4 addresses
+    fortios_firewall_address:
+      vdom:  "{{ vdom }}"
+      state: "present"
+      firewall_address:
+        name: "{{ address_name }}"
+        type: "{{ address_type }}"
+        color: "{{ colour }}"
+        subnet: "{{ subnet }}"
+        allow_routing: "disable"
+        associated_interface: "{{ address_obj_interface }}"
+        comment: "{{ comment }}"
