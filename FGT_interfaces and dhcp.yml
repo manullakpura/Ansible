@@ -1,0 +1,82 @@
+---
+- hosts: fortigates
+  collections:
+   - fortinet.fortios
+  connection: httpapi
+
+  vars:
+
+   vdom: "root"
+   lan_name_or_interface: "port2"
+   lan_alias: "inside"
+   lan_mode: "static"
+   lan_ip: "172.20.8.254/24"
+   lan_role: "lan"
+   lan_allowaccess: "ssh,http,https"
+
+   wan_name_or_interface: "port3"
+   wan_alias: "outside"
+   wan_mode: "static"
+   wan_ip: "192.168.150.253/30"
+   wan_role: "wan"
+   wan_allowaccess: "ping"
+
+   default_gateway: "172.20.8.254"
+   dhcp_end_ip: "172.20.8.253"
+   dhcp_start_ip: "172.20.8.2"
+   dhcp_mask: "255.255.255.0"
+   dhcp_id: 3
+   ntp_server: "172.20.10.254"
+
+   domain_name: "nettalks.lk"
+
+   ansible_httpapi_use_ssl: no
+   ansible_httpapi_validate_certs: no
+   ansible_httpapi_port: 80
+
+  tasks:
+
+  - name: Configure lan.
+    fortios_system_interface:
+      vdom: "{{ vdom }}"
+      state: "present"
+      system_interface:
+        name: "{{ lan_name_or_interface }}"
+        alias: "{{ lan_alias }}"
+        mode: "{{ lan_mode }}"
+        ip: "{{ lan_ip }}"
+        role: "{{ lan_role }}"
+        interface: "{{ lan_name_or_interface }}"
+        allowaccess: "{{ lan_allowaccess }}"
+        
+
+  - name: Configure wan
+    fortios_system_interface:
+      vdom: "{{ vdom }}"
+      state: "present"
+      system_interface:
+        name: "{{ wan_name_or_interface }}"
+        alias: "{{ wan_alias }}"
+        mode: "{{ wan_mode }}"
+        ip: "{{ wan_ip }}"
+        role: "{{ wan_role }}"
+        interface: "{{ wan_name_or_interface }}"
+        allowaccess: "{{ wan_allowaccess }}"
+
+  - name: Configure DHCP server in the LAN
+    fortios_system_dhcp_server:
+      vdom:  "{{ vdom }}"
+      state: "present"
+      system_dhcp_server:
+        default_gateway: "{{ default_gateway }}"
+        dns_server1: "{{ default_gateway }}"
+        interface: "{{ lan_name_or_interface }}"
+        ip_mode: "range"
+        ip_range:
+         -
+            end_ip: "{{ dhcp_end_ip  }}"
+            start_ip: "{{ dhcp_start_ip }}"
+        netmask: "{{ dhcp_mask  }}"
+        id: "{{ dhcp_id }}"
+        ntp_server1: "{{ ntp_server }}"
+        domain: "{{ domain_name }}"

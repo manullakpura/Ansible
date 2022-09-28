@@ -1,0 +1,31 @@
+---
+- hosts: fortigates
+  collections:
+   - fortinet.fortios
+  connection: httpapi
+
+
+  vars:
+   vdom: "root"
+   hostname: "FGT-Office"
+   timeout: "5"
+   lan_alias: "LAN"
+#   lan_allowaccess: "ping,https,http,ssh"
+   lan_description: "LAN INTERFACE"
+   lan_interface: "port2"
+   lan_ip: "172.20.10.254/23"
+   ansible_httpapi_use_ssl: no
+   ansible_httpapi_validate_certs: no
+   ansible_httpapi_port: 80
+   
+  tasks:
+  - name: Configure global attributes.
+    fortios_system_global:
+      vdom: "{{ vdom }}"
+      system_global:
+        admintimeout: "{{ timeout }}"
+        hostname: "{{ hostname }}"
+  - name: Configure the interfaces LAN and WAN.
+    fortios_system_interface:
+      vdom: "{{ vdom }}"
+      state: "present"

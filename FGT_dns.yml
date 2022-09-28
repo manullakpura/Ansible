@@ -1,0 +1,25 @@
+---
+- hosts: fortigates
+  collections:
+    - fortinet.fortios
+  connection: httpapi
+  vars:
+   vdom: "root"
+   dns_over_tls: "disable"
+   dns_primary: "208.91.112.53"
+   dns_secondary: "208.91.112.52"
+
+   ansible_httpapi_use_ssl: no
+   ansible_httpapi_validate_certs: no
+   ansible_httpapi_port: 80
+  tasks:
+  - name: Configure DNS.
+    fortios_system_dns:
+      vdom:  "{{ vdom }}"
+      system_dns:
+        primary: "{{ dns_primary }}"
+        secondary: "{{ dns_secondary }}"
+        dns_over_tls: "{{ dns_over_tls }}"
+        domain:
+         -
+            domain: "nettalks.lk"
